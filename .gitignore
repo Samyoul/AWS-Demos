@@ -2,3 +2,5 @@
 .vscode
 .git
 slnx*
+*iml
+/.idea
