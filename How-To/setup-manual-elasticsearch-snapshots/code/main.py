@@ -51,15 +51,18 @@ def get_snapshot_status():
 
 
 def make_aws_auth():
-    es_region = os.getenv('es_region')
-
     session = boto3.Session(
         aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
         aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
     )
-
     credentials = session.get_credentials()
-    return AWS4Auth(credentials.access_key, credentials.secret_key, es_region, 'es')
+
+    return AWS4Auth(
+        credentials.access_key,
+        credentials.secret_key,
+        os.getenv('es_region'),
+        'es'
+    )
 
 
 def make_snapshot_url(name=""):
