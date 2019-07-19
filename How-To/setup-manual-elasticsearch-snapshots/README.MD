@@ -103,9 +103,9 @@ es_snapshot_name = 'my-snapshot-repo'
 AWS ElasticSearch Manual Snapshot
 
 Usage:
-  python snapshot register      Register your snapshot directory with ElasticSearch
-  python snapshot make <name>   Trigger a manual snapshot of the given name
-  python snapshot status        Show the status of the instance's snapshots
+  python snapshot register          Register your snapshot directory with ElasticSearch
+  python snapshot make <name>       Trigger a manual snapshot of the given name
+  python snapshot status [<name>]   Show the status of the instance's snapshots
   python snapshot -h | --help
   python snapshot -v | --version
 
@@ -207,6 +207,18 @@ Using the CLI Tool you can achieve this with:
 
 ```bash
 python snapshot status
+```
+
+Or to get the detailed status of a specific snapshot
+
+```bash
+python snapshot status <name>
+```
+
+Example:
+
+```bash
+python snapshot status 2018-08-24
 ```
 
 Use the following command to verify the state of snapshots of your domain:
