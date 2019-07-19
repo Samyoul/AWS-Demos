@@ -1,11 +1,11 @@
 """AWS ElasticSearch Manual Snapshot
 
 Usage:
-  python snapshot register      Register your snapshot directory with ElasticSearch
-  python snapshot make <name>   Trigger a manual snapshot of the given name
-  python snapshot status        Show the status of the instance's snapshots
-  python snapshot -h | --help
-  python snapshot -v | --version
+  snapshot register
+  snapshot make <name>
+  snapshot status [<name>]
+  snapshot -h | --help
+  snapshot -v | --version
 
 Options:
   -h --help     Show this screen.
@@ -54,9 +54,14 @@ def take_snapshot(name):
     print(r.text)
 
 
-def get_snapshot_status():
+def get_snapshot_status(name):
+    if name is None:
+        url = '/_all?pretty'
+    else:
+        url = '/' + name + '/_status?pretty'
+
     r = requests.get(
-        make_snapshot_url('/_all?pretty'),
+        make_snapshot_url(url),
         auth=make_aws_auth(),
         headers=json_header()
     )
@@ -98,4 +103,4 @@ if __name__ == '__main__':
     if arguments["make"]:
         take_snapshot(arguments["<name>"])
     if arguments["status"]:
-        get_snapshot_status()
+        get_snapshot_status(arguments["<name>"])
