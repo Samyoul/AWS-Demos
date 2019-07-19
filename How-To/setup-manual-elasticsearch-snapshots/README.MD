@@ -76,13 +76,58 @@ Follow this article in **[Youtube](https://www.youtube.com/channel/UC_evcfxhjjui
 1. EC2 running Linux that can connect to the ES Cluster - _Simply host it in the same VPC/subnet as ES_
    1. AWS CLI Configured with IAM User `my-manual-es-snap-creator-role`
 
+## CLI Tool
+
+### Install Python dependencies
+
+`pip install -r requirements.txt`
+
+### Set Application Variables
+
+Copy the file `How-To/setup-manual-elasticsearch-snapshots/code/.env.example` to a file named `.env` and add your application variables into the file for each of the variables listed.
+
+```text
+AWS_ACCESS_KEY_ID=""
+AWS_SECRET_ACCESS_KEY=""
+es_host = 'https://search-yourdomain-ag6ao573vbru2gqi2id4xpjcjq.eu-west-1.es.amazonaws.com/'
+s3_bucket = 'yourdomain.es-backup'
+es_region = 'eu-west-1'
+s3_region = 'eu-west-2'
+role_arn = 'arn:aws:iam::153123107323:role/yourdomain.es-backup-role'
+es_snapshot_name = 'my-snapshot-repo'
+```
+
+### Documentation For the CLI Tool
+
+```text
+AWS ElasticSearch Manual Snapshot
+
+Usage:
+  python snapshot register      Register your snapshot directory with ElasticSearch
+  python snapshot make <name>   Trigger a manual snapshot of the given name
+  python snapshot status        Show the status of the instance's snapshots
+  python snapshot -h | --help
+  python snapshot -v | --version
+
+Options:
+  -h --help        Show this screen.
+  -v --version     Show version.
+```
+
 ### Registering a Manual Snapshot Repository
 You must register a snapshot repository with Amazon Elasticsearch Service before you can take manual index snapshots.
 _If your ES domain resides within a VPC, your computer must be connected to the VPC in order for the request to successfully register the snapshot repository_
 
 #### Prepare the EC2 Client to register our S3 Repo
+
+Using the CLI Tool you can achieve this with:
+
+```bash
+python snapshot register
+```
+
 **NOTE:** Change the `host`, `region` and the `ROLE ARN` in the below code to suit your environment.
-```sh
+```bash
 # Install some prerequisites packages
 yum -y install python-pip
 pip install requests-aws4auth
@@ -126,24 +171,46 @@ chmod 700 /tmp/register-repo.py
 python /tmp/register-repo.py
 ```
 Output should be something like this,
-```sh
+```text
 200
 {"acknowledged":true}
 ```
 
 ## Taking Manual Snapshots
+
+Using the CLI Tool you can achieve this with:
+
+```bash
+python snapshot make <name>
+```
+
+Example:
+
+```bash
+python snapshot make 2018-08-24
+```
+
 You specify two pieces of information when you create a snapshot:
 - Name of your snapshot repository - Ex: `my-snapshot-repo`
 - Name for the snapshot - Ex: `2018-08-24`
 
 **Note:** _Snapshots are not instantaneous; they take some time to complete._
-```sh
+```bash
 # curl -XPUT 'elasticsearch-domain-endpoint/_snapshot/repository/snapshot-name'
 
 curl -XPUT 'https://search-es-flowlogs-a1b2c3r4etc.eu-central-1.es.amazonaws.com/_snapshot/my-snapshot-repo/2018-08-24'
 ```
+
+### Getting Snapshot Status
+
+Using the CLI Tool you can achieve this with:
+
+```bash
+python snapshot status
+```
+
 Use the following command to verify the state of snapshots of your domain:
-```sh
+```bash
 curl -XGET 'https://search-es-flowlogs-a1b2c3r4etc.eu-central-1.es.amazonaws.com/_snapshot/my-snapshot-repo/_all?pretty'
 ```
 
@@ -152,7 +219,7 @@ Output,
 
 #### Back up an index
 By default, Amazon ES snapshots the entire cluster’s indexes. By snapshotting a single index, you give yourself flexibility in where and when you restore the data. You can alter the default behavior with the `indices` setting.
-```sh
+```bash
 curl -XPUT 'https://search-es-flowlogs-a1b2c3r4etc.eu-central-1.es.amazonaws.com/_snapshot/my-snapshot-repo/2018-08-24' 
 -d'{
   "indices": "cwl-2018-07-16",
@@ -164,7 +231,7 @@ You can specify one or more indexes for backup in this snapshot. You can choose 
 
 You can also use the `_snapshot` API action to check the status of your snapshot or get a list of all snapshots in the repository.
 
-```sh
+```bash
 curl -XGET 'https://search-es-flowlogs-a1b2c3r4etc.eu-central-1.es.amazonaws.com/_snapshot/my-snapshot-repo/_status'
 curl -XGET 'https://search-es-flowlogs-a1b2c3r4etc.eu-central-1.es.amazonaws.com/_snapshot/my-snapshot-repo/_all'
 ```
@@ -174,7 +241,7 @@ To restore, you must ensure that the index is not open. This state is normally t
 When you restore, you specify the snapshot, and also any indexes that are in the snapshot. You do this in much the same way as when you took the snapshot in the first place.
 
 The following example restores just one index, `cwl-2018-08-22`, from `2018-08-12` in the `my-snapshot-repo` snapshot repository:
-```sh
+```bash
 curl -XPOST 'https://search-es-flowlogs-01-a1b2c3r4etc.eu-central-1.es.amazonaws.com/_snapshot/my-snapshot-repo/2018-08-24/_restore' -d'{
   "indices": "cwl-2018-08-22",
   "ignore_unavailable": false,
@@ -193,11 +260,11 @@ curl --XPUT 'https://search-es-flowlogs-01-a1b2c3r4etc.eu-central-1.es.amazonaws
 ```
 ### Deleting Indices
 If you don't plan to restore all indices, though, you might want to delete only one:
-```sh
+```bash
 curl -XDELETE 'https://search-es-flowlogs-01-a1b2c3r4etc.eu-central-1.es.amazonaws.com/index-name'
 ```
 The following example shows how to delete all existing indices for a domain:
-```sh
+```bash
 curl -XDELETE 'https://search-es-flowlogs-01-a1b2c3r4etc.eu-central-1.es.amazonaws.com/_all'
 ```
 

@@ -1,0 +1,5 @@
+python-dotenv
+boto3
+requests
+requests_aws4auth
+docopt==0.6.2

@@ -1,8 +1,23 @@
+"""AWS ElasticSearch Manual Snapshot
+
+Usage:
+  python snapshot register      Register your snapshot directory with ElasticSearch
+  python snapshot make <name>   Trigger a manual snapshot of the given name
+  python snapshot status        Show the status of the instance's snapshots
+  python snapshot -h | --help
+  python snapshot -v | --version
+
+Options:
+  -h --help     Show this screen.
+  -v --version     Show version.
+"""
+
 from dotenv import load_dotenv
 import os
 import boto3
 import requests
 from requests_aws4auth import AWS4Auth
+from docopt import docopt
 
 load_dotenv()
 
@@ -74,3 +89,13 @@ def make_snapshot_url(name=""):
 
 def json_header():
     return {"Content-Type": "application/json"}
+
+
+if __name__ == '__main__':
+    arguments = docopt(__doc__, version='AWS ElasticSearch Manual Snapshot 2.0')
+    if arguments["register"]:
+        register()
+    if arguments["make"]:
+        take_snapshot(arguments["<name>"])
+    if arguments["status"]:
+        get_snapshot_status()
