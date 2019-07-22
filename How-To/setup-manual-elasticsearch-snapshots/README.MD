@@ -80,7 +80,9 @@ Follow this article in **[Youtube](https://www.youtube.com/channel/UC_evcfxhjjui
 
 ### Install Python dependencies
 
-`pip install -r requirements.txt`
+```bash
+pip install -r requirements.txt
+```
 
 ### Set Application Variables
 
@@ -106,6 +108,7 @@ Usage:
   python snapshot register          Register your snapshot directory with ElasticSearch
   python snapshot make <name>       Trigger a manual snapshot of the given name
   python snapshot status [<name>]   Show the status of the instance's snapshots
+  python snapshot delete <name>     Deletes the snapshot with the given name
   python snapshot -h | --help
   python snapshot -v | --version
 
@@ -271,6 +274,19 @@ curl -XPOST 'https://search-es-flowlogs-01-a1b2c3r4etc.eu-central-1.es.amazonaws
 curl --XPUT 'https://search-es-flowlogs-01-a1b2c3r4etc.eu-central-1.es.amazonaws.com/_all'
 ```
 ### Deleting Indices
+
+Using the CLI Tool you can achieve this with:
+
+```bash
+python snapshot delete <name>
+```
+
+Example:
+
+```bash
+python snapshot delete 2018-08-24
+```
+
 If you don't plan to restore all indices, though, you might want to delete only one:
 ```bash
 curl -XDELETE 'https://search-es-flowlogs-01-a1b2c3r4etc.eu-central-1.es.amazonaws.com/index-name'
