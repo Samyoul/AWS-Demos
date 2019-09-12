@@ -67,7 +67,11 @@ Follow this article in **[Youtube](https://www.youtube.com/channel/UC_evcfxhjjui
         },
         {
           "Effect": "Allow",
-          "Action": "es:ESHttpPut",
+          "Action": [
+             "es:ESHttpGet",
+             "es:ESHttpPost",
+             "es:ESHttpPut"
+          ],
           "Resource": "arn:aws:es:region:YOUR-ACCOUNT-ID:domain/YOU-ELASTIC-SEARCH-DOMAIN-NAME/*"
         }
       ]
@@ -108,6 +112,7 @@ Usage:
   python snapshot register          Register your snapshot directory with ElasticSearch
   python snapshot make <name>       Trigger a manual snapshot of the given name
   python snapshot status [<name>]   Show the status of the instance's snapshots
+  python snapshot restore <name>    Restores the snapshot of the given name
   python snapshot delete <name>     Deletes the snapshot with the given name
   python snapshot -h | --help
   python snapshot -v | --version
@@ -254,6 +259,22 @@ curl -XGET 'https://search-es-flowlogs-a1b2c3r4etc.eu-central-1.es.amazonaws.com
 To restore, you must ensure that the index is not open. This state is normally the case if you are reloading old data into the same cluster. If the index is open, delete the existing index first, then restore your backup.
 
 When you restore, you specify the snapshot, and also any indexes that are in the snapshot. You do this in much the same way as when you took the snapshot in the first place.
+
+#### CLI Tool
+
+Using the CLI Tool you can achieve this with:
+
+```bash
+python snapshot restore <name>
+```
+
+Example:
+
+```bash
+python snapshot restore 2018-08-24
+```
+
+#### CURL
 
 The following example restores just one index, `cwl-2018-08-22`, from `2018-08-12` in the `my-snapshot-repo` snapshot repository:
 ```bash

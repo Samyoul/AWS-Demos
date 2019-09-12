@@ -4,6 +4,7 @@ Usage:
   snapshot register
   snapshot make <name>
   snapshot status [<name>]
+  snapshot restore <name>
   snapshot delete <name>
   snapshot -h | --help
   snapshot -v | --version
@@ -71,6 +72,16 @@ def get_snapshot_status(name):
     print(r.text)
 
 
+def restore_snapshot(name):
+    r = requests.post(
+        make_snapshot_url('/' + name + '/_restore?pretty'),
+        auth=make_aws_auth()
+    )
+
+    print(r.status_code)
+    print(r.text)
+
+
 def delete_snapshot(name):
     r = requests.delete(
         make_snapshot_url("/" + name),
@@ -116,5 +127,7 @@ if __name__ == '__main__':
         take_snapshot(arguments["<name>"])
     if arguments["status"]:
         get_snapshot_status(arguments["<name>"])
+    if arguments["restore"]:
+        restore_snapshot(arguments["<name>"])
     if arguments["delete"]:
         delete_snapshot(arguments["name"])
