@@ -8,7 +8,7 @@ Follow this article in **[Youtube](https://www.youtube.com/channel/UC_evcfxhjjui
 
 ![es-manual-snaps](https://raw.githubusercontent.com/miztiik/AWS-Demos/master/How-To/setup-manual-elasticsearch-snapshots/images/ElasticSearch-Manual-Snapshots-00.png)
 
-### Prerequisites
+## Prerequisites
 1. ElasticSearch Domain - [Get help here](https://youtu.be/cahU_A4c-eE)
 1. Create S3 Bucket - `my-manual-es-snaps-bkt-001`
    - Get the Bucket ARN - `arn:aws:s3:::my-manual-es-snaps-bkt-001`
@@ -122,17 +122,23 @@ Options:
   -v --version     Show version.
 ```
 
+## Methods
+
 ### Registering a Manual Snapshot Repository
 You must register a snapshot repository with Amazon Elasticsearch Service before you can take manual index snapshots.
 _If your ES domain resides within a VPC, your computer must be connected to the VPC in order for the request to successfully register the snapshot repository_
 
 #### Prepare the EC2 Client to register our S3 Repo
 
+#### Via the CLI Tool
+
 Using the CLI Tool you can achieve this with:
 
 ```bash
 python snapshot register
 ```
+
+#### Via raw Python Script
 
 **NOTE:** Change the `host`, `region` and the `ROLE ARN` in the below code to suit your environment.
 ```bash
@@ -184,7 +190,9 @@ Output should be something like this,
 {"acknowledged":true}
 ```
 
-## Taking Manual Snapshots
+### Taking Manual Snapshots
+
+#### Via the CLI Tool
 
 Using the CLI Tool you can achieve this with:
 
@@ -198,6 +206,8 @@ Example:
 python snapshot make 2018-08-24
 ```
 
+#### Via CURL
+
 You specify two pieces of information when you create a snapshot:
 - Name of your snapshot repository - Ex: `my-snapshot-repo`
 - Name for the snapshot - Ex: `2018-08-24`
@@ -210,6 +220,8 @@ curl -XPUT 'https://search-es-flowlogs-a1b2c3r4etc.eu-central-1.es.amazonaws.com
 ```
 
 ### Getting Snapshot Status
+
+#### Via the CLI Tool
 
 Using the CLI Tool you can achieve this with:
 
@@ -228,6 +240,8 @@ Example:
 ```bash
 python snapshot status 2018-08-24
 ```
+
+#### Via CURL
 
 Use the following command to verify the state of snapshots of your domain:
 ```bash
@@ -260,7 +274,7 @@ To restore, you must ensure that the index is not open. This state is normally t
 
 When you restore, you specify the snapshot, and also any indexes that are in the snapshot. You do this in much the same way as when you took the snapshot in the first place.
 
-#### CLI Tool
+#### Via the CLI Tool
 
 Using the CLI Tool you can achieve this with:
 
@@ -274,7 +288,7 @@ Example:
 python snapshot restore 2018-08-24
 ```
 
-#### CURL
+#### Via CURL
 
 The following example restores just one index, `cwl-2018-08-22`, from `2018-08-12` in the `my-snapshot-repo` snapshot repository:
 ```bash
@@ -296,6 +310,8 @@ curl --XPUT 'https://search-es-flowlogs-01-a1b2c3r4etc.eu-central-1.es.amazonaws
 ```
 ### Deleting Indices
 
+#### Via the CLI Tool
+
 Using the CLI Tool you can achieve this with:
 
 ```bash
@@ -307,6 +323,8 @@ Example:
 ```bash
 python snapshot delete 2018-08-24
 ```
+
+#### Via CURL
 
 If you don't plan to restore all indices, though, you might want to delete only one:
 ```bash
